@@ -1,9 +1,6 @@
-/*
-Design Multifloor Parking Lot
-*/
-
 import java.util.HashMap;
 import java.util.UUID;
+import java.lang.Thread;
 
 enum VehicleType {
     BIKE,
@@ -253,7 +250,7 @@ class ParkingManager {
         
         activeTickets.remove(ticketId);
         
-        System.out.println("Vehicle unparked. Parking fee: " + fee);
+        // System.out.println("Vehicle unparked. Parking fee: " + fee);
         return fee;
     }
 }
@@ -265,19 +262,85 @@ public class Main {
         ParkingManager manager = new ParkingManager(parkingLot);
         
         // Setup ParkingLot
-        ParkingFloor floor = new ParkingFloor("Floor 1");
-        floor.addSpot(new ParkingSpot("C1", ParkingSpotType.COMPACT));
-        floor.addSpot(new ParkingSpot("B1", ParkingSpotType.BIKE));
-        parkingLot.addFloor(floor);
+        ParkingFloor floor1 = new ParkingFloor("Floor 1");
+        floor1.addSpot(new ParkingSpot("C11", ParkingSpotType.COMPACT));
+        floor1.addSpot(new ParkingSpot("C12", ParkingSpotType.COMPACT));
+        floor1.addSpot(new ParkingSpot("B11", ParkingSpotType.BIKE));
+        floor1.addSpot(new ParkingSpot("B12", ParkingSpotType.BIKE));
+        parkingLot.addFloor(floor1);
+        
+         // Setup ParkingLot
+        ParkingFloor floor2 = new ParkingFloor("Floor 2");
+        floor2.addSpot(new ParkingSpot("C21", ParkingSpotType.COMPACT));
+        floor2.addSpot(new ParkingSpot("C22", ParkingSpotType.COMPACT));
+        floor2.addSpot(new ParkingSpot("B21", ParkingSpotType.BIKE));
+        floor2.addSpot(new ParkingSpot("B22", ParkingSpotType.BIKE));
+        parkingLot.addFloor(floor2);
         
         // Park vehicles
-        Vehicle car = new Car("CAR123");
-        Ticket carTicket = manager.parkVehicle(car);
+        Vehicle car1 = new Car("CAR1");
+        Ticket carTicket1 = manager.parkVehicle(car1);
         
-        // Unpark vehicles
-        if (carTicket != null) {
-            long fee = manager.unparkVehicle(carTicket.getTicketId());
-            System.out.println("Parking fee for CAR123: " + fee);
+        Vehicle car2 = new Car("CAR2");
+        Ticket carTicket2 = manager.parkVehicle(car2);
+        
+        Vehicle car3 = new Car("CAR3");
+        Ticket carTicket3 = manager.parkVehicle(car3);
+        
+        Vehicle car4 = new Car("CAR4");
+        Ticket carTicket4 = manager.parkVehicle(car4);
+        
+        Vehicle car5 = new Car("CAR5");
+        Ticket carTicket5 = manager.parkVehicle(car5);
+        
+        // // Unpark vehicles
+        if (carTicket1 != null) {
+            long fee = manager.unparkVehicle(carTicket1.getTicketId());
+            System.out.println("Parking fee for CAR1: " + fee);
+        }
+        
+        try {
+            Thread.sleep(100);
+        } catch (Exception e) {
+            
+        }
+        
+        if (carTicket2 != null) {
+            long fee = manager.unparkVehicle(carTicket2.getTicketId());
+            System.out.println("Parking fee for CAR2: " + fee);
+        }
+        
+        try {
+            Thread.sleep(100);
+        } catch (Exception e) {
+            
+        }
+        
+        if (carTicket3 != null) {
+            long fee = manager.unparkVehicle(carTicket3.getTicketId());
+            System.out.println("Parking fee for CAR3: " + fee);
+        }
+        
+        try {
+            Thread.sleep(100);
+        } catch (Exception e) {
+            
+        }
+        
+        if (carTicket4 != null) {
+            long fee = manager.unparkVehicle(carTicket4.getTicketId());
+            System.out.println("Parking fee for CAR4: " + fee);
+        }
+        
+        try {
+            Thread.sleep(100);
+        } catch (Exception e) {
+            
+        }
+        
+        if (carTicket5 != null) {
+            long fee = manager.unparkVehicle(carTicket5.getTicketId());
+            System.out.println("Parking fee for CAR5: " + fee);
         }
     }
 }
