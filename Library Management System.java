@@ -56,7 +56,20 @@ class Book {
     }
 }
 
+interface Filter<T> {
+    public List<T> filter(List<T> lists, Predicate<T> condition);
+} 
+
+class BookByCondition implements Filter<Book> {
+    
+    @Override
+    public List<Book> filter(List<Book> books, Predicate<Book> condition) {
+        
+    }
+} 
+
 class BookSelf {
+    
     
 }
 
