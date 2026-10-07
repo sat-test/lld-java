@@ -1,0 +1,225 @@
+abstract class Jump {
+    private final int start;
+    private final int end;
+
+    protected Jump(int start, int end) {
+        this.start = start;
+        this.end = end;
+    }
+
+    public int getStart() {
+        return start;
+    }
+
+    public int getEnd() {
+        return end;
+    }
+}
+
+
+class Snake extends Jump {
+    public Snake(int head, int tail) {
+        super(head, tail);
+        if (head <= tail) {
+            throw new IllegalArgumentException(
+                "Snake head must be above its tail"
+            );
+        }
+    }
+}
+
+class Ladder extends Jump {
+    public Ladder(int bottom, int top) {
+        super(bottom, top);
+        if (bottom >= top) {
+            throw new IllegalArgumentException(
+                "Ladder top must be above its bottom"
+            );
+        }
+    }
+}
+
+class Board {
+    private final int size;
+    private final Map<Integer, Integer> jumps;
+
+    public Board(int size) {
+        if (size < 2) {
+            throw new IllegalArgumentException("Invalid board size");
+        }
+        this.size = size;
+        this.jumps = new HashMap<>();
+    }
+
+    public void addJump(Jump jump) {
+        int start = jump.getStart();
+        int end = jump.getEnd();
+
+        if (start < 1 || start >= size ||
+            end < 1 || end > size || start == end) {
+            throw new IllegalArgumentException("Invalid jump positions");
+        }
+
+        if (jumps.containsKey(start)) {
+            throw new IllegalArgumentException(
+                "Multiple jumps cannot start at the same cell"
+            );
+        }
+
+        jumps.put(start, end);
+    }
+
+    public int getFinalPosition(int position) {
+        return jumps.getOrDefault(position, position);
+    }
+
+    public int getSize() {
+        return size;
+    }
+}
+
+class Player {
+    private final String id;
+    private final String name;
+    private int position;
+
+    public Player(String id, String name) {
+        this.id = id;
+        this.name = name;
+        this.position = 0; // Outside the board initially
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getPosition() {
+        return position;
+    }
+
+    public void moveTo(int position) {
+        this.position = position;
+    }
+}
+
+class Dice {
+    private final int maxValue;
+    private final Random random;
+
+    public Dice(int maxValue) {
+        if (maxValue < 1) {
+            throw new IllegalArgumentException("Invalid dice size");
+        }
+        this.maxValue = maxValue;
+        this.random = new Random();
+    }
+
+    public int roll() {
+        return random.nextInt(maxValue) + 1;
+    }
+}
+
+class Game {
+    private final Board board;
+    private final Dice dice;
+    private final List<Player> players;
+
+    private int currentPlayerIndex;
+    private boolean finished;
+
+    public Game(Board board, Dice dice, List<Player> players) {
+        if (players == null || players.size() < 2) {
+            throw new IllegalArgumentException(
+                "At least two players are required"
+            );
+        }
+
+        this.board = board;
+        this.dice = dice;
+        this.players = new ArrayList<>(players);
+        this.currentPlayerIndex = 0;
+        this.finished = false;
+    }
+
+    public void play() {
+        while (!finished) {
+            playTurn();
+        }
+    }
+
+    public void playTurn() {
+        if (finished) {
+            return;
+        }
+
+        Player player = players.get(currentPlayerIndex);
+        int roll = dice.roll();
+
+        int oldPosition = player.getPosition();
+        int nextPosition = oldPosition + roll;
+
+        System.out.println(
+            player.getName() + " rolled " + roll
+        );
+
+        // Exact landing required to win.
+        if (nextPosition > board.getSize()) {
+            System.out.println(
+                player.getName() + " stays at " + oldPosition
+            );
+        } else {
+            int finalPosition = board.getFinalPosition(nextPosition);
+            player.moveTo(finalPosition);
+
+            System.out.println(
+                player.getName() + " moved from " + oldPosition +
+                " to " + nextPosition +
+                (finalPosition != nextPosition
+                    ? " and then to " + finalPosition
+                    : "")
+            );
+
+            if (finalPosition == board.getSize()) {
+                System.out.println(
+                    player.getName() + " wins!"
+                );
+                finished = true;
+                return;
+            }
+        }
+
+        currentPlayerIndex =
+            (currentPlayerIndex + 1) % players.size();
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Board board = new Board(100);
+
+        board.addJump(new Ladder(4, 14));
+        board.addJump(new Ladder(9, 31));
+        board.addJump(new Ladder(20, 38));
+        board.addJump(new Ladder(28, 84));
+
+        board.addJump(new Snake(17, 7));
+        board.addJump(new Snake(54, 34));
+        board.addJump(new Snake(62, 19));
+        board.addJump(new Snake(98, 79));
+
+        Player p1 = new Player("P1", "Alice");
+        Player p2 = new Player("P2", "Bob");
+
+        Game game = new Game(
+            board,
+            new Dice(6),
+            Arrays.asList(p1, p2)
+        );
+
+        game.play();
+    }
+}
